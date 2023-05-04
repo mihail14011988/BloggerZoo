@@ -9,6 +9,7 @@ import miha.zika.entity.ImageComm;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+
 @Repository
 public interface ImageRepo extends JpaRepository<ImageComm, Long>{
     Optional<ImageComm> findByUserId(Long id);

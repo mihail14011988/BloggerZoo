@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String username) {
      
-    UserBlogger user= repo.findUserBloggerByUsername(username).orElseThrow(()->new UsernameNotFoundException("User не найден"));
+    UserBlogger user= repo.findUserBloggerByEmail(username).orElseThrow(()->new UsernameNotFoundException("User: " + username + " не найден"));
         return build(user);
 
     }

@@ -4,16 +4,46 @@
  */
 package miha.zika.service;
 
+import miha.zika.entity.UserBlogger;
+import miha.zika.entity.enums.UserRole;
+import miha.zika.mainException.UserExistException;
+import miha.zika.payload.request.SignUpRequest;
 import miha.zika.repo.UserRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-//  private final UserRepo userRepo;
-//@Autowired
-//    public UserService(UserRepo userRepo) {
-//        this.userRepo = userRepo;}
+private final static Logger LOG= LoggerFactory.getLogger(UserService.class);
+private final UserRepo userRepo;
+private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+@Autowired
+    public UserService(UserRepo userRepo, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.userRepo = userRepo;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+
+public UserBlogger createUser(SignUpRequest request){
+UserBlogger blogger = new UserBlogger();
+blogger.setEmail(request.getEmail());
+blogger.setName(request.getFirstname());
+blogger.setLastname(request.getLastname());
+blogger.setUsername(request.getUsername());
+blogger.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
+blogger.getUserRole().add(UserRole.USER_SINGLE);
+try{
+LOG.info("SAVING USER",request.getEmail());
+return userRepo.save(blogger);
+} catch (Exception e){
+LOG.error("ERROR SAVE USER", e.getMessage());
+throw new UserExistException("They user is active " + blogger.getUsername() + " is exist");
+}
+}
     }
 
 

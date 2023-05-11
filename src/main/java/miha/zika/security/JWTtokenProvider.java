@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JWTtokenProvider {
-    private static final Logger LOG=LoggerFactory.getLogger(JWTtokenProvider.class);
+    public static final Logger LOG=LoggerFactory.getLogger(JWTtokenProvider.class);
     
     public String generateToken (Authentication authentication){
         UserBlogger user = (UserBlogger) authentication.getPrincipal();
@@ -40,11 +40,11 @@ public class JWTtokenProvider {
                 .addClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(after)
-                .signWith(SignatureAlgorithm.HS512, SecurityConst.SECRET_CODE).compact();
+                .signWith(SignatureAlgorithm.HS512, SecurityConst.SECRET).compact();
     }
     
     public boolean validateToken (String token){
-    try {Jwts.parser().setSigningKey(SecurityConst.SECRET_CODE).parseClaimsJws(token); return true;}
+    try {Jwts.parser().setSigningKey(SecurityConst.SECRET).parseClaimsJws(token); return true;}
     catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException ex){
     LOG.error(ex.getMessage());
     return false;
@@ -53,7 +53,7 @@ public class JWTtokenProvider {
    }
     
     public Long getUserIdFromToken(String token){
-    Claims claims = Jwts.parser().setSigningKey(SecurityConst.SECRET_CODE).parseClaimsJwt(token).getBody();
+    Claims claims = Jwts.parser().setSigningKey(SecurityConst.SECRET).parseClaimsJwt(token).getBody();
     String id=(String) claims.get("id");
     return Long.parseLong(id);
     }

@@ -4,14 +4,12 @@
  */
 package miha.zika.security;
 
-import javax.servlet.Filter;
 import miha.zika.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,8 +35,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(entryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers(SecurityConst.SIGN_UP_URL).permitAll();
-        http.addFilterBefore(JWTFilter(), UsernamePasswordAuthenticationFilter.class);
+                .authorizeRequests().antMatchers(SecurityConst.SIGN_UP_URLS).permitAll().anyRequest().authenticated();
+        
+                http.addFilterBefore(JWTFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

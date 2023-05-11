@@ -85,11 +85,7 @@ public class UserBlogger implements UserDetails{
     return password;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
+    
     @Override
     public boolean isAccountNonExpired() {
     return true;
@@ -97,7 +93,7 @@ public class UserBlogger implements UserDetails{
 
     @Override
     public boolean isAccountNonLocked() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    return true;
     }
 
     @Override
@@ -109,4 +105,11 @@ public class UserBlogger implements UserDetails{
     public boolean isEnabled() {
      return true;
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+    return this.aithorites;
+    }
+
+   
 }

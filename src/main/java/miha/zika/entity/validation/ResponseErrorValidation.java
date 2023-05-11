@@ -4,10 +4,8 @@
  */
 package miha.zika.entity.validation;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import org.springframework.boot.context.properties.bind.BindResult;
+
+import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

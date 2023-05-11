@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 @PreAuthorize("permitAll()")
 public class AuthController {
    @Autowired
@@ -48,21 +48,21 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<Object> authUser(@Valid @RequestBody LoginReguest loginReguest, BindingResult result){
      ResponseEntity <Object> errors =errorValidation.mapValidResponseEntity(result);
-    if(ObjectUtils.isEmpty(errors)) return errors ;
+    if(!ObjectUtils.isEmpty(errors)) return errors ;
     
     Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
             loginReguest.getUsername(), loginReguest.getPassword()));       
     
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwtToken= SecurityConst.TOKEN_PREFIX+provider.generateToken(authentication);
-        return ResponseEntity.ok(new JWTResponseTokenSuccess(true,"TOKEN IS OK"));
+        return ResponseEntity.ok(new JWTResponseTokenSuccess(true,jwtToken));
     };
     
  //api/auth/signup
     @PostMapping("/signup")
     public ResponseEntity<Object> registrUser (@Valid @RequestBody SignUpRequest request, BindingResult result){
     ResponseEntity <Object> errors =errorValidation.mapValidResponseEntity(result);
-    if(ObjectUtils.isEmpty(errors)) return errors ;
+    if(!ObjectUtils.isEmpty(errors)) return errors ;
     service.createUser(request);
     return ResponseEntity.ok(new MessageResponse("User registr is ok"));
     };

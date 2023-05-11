@@ -4,22 +4,21 @@
  */
 package miha.zika.entity.annotaitions;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
 import miha.zika.entity.validation.PasswordValidation;
 
-@Target({ElementType.TYPE,ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = PasswordValidation.class)
 @Documented
 public @interface PassworMatches {
-     String message() default "Password do not match";
-    Class<?>[] groops() default {};
+  String message() default "Password do not match";
+
+    Class<?>[] groups() default{};
+
     Class<? extends Payload>[] payload() default {};
 }

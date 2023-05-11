@@ -18,7 +18,7 @@ public class SignUpRequest {
 
     @Email(message = "It should have email format")
     @NotBlank(message = "User email is requered")
-    @ValidEmail
+   // @ValidEmail
     private String email;
 
     @NotEmpty(message = "please enter your name")

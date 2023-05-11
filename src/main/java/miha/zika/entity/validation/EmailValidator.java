@@ -11,10 +11,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import miha.zika.entity.annotaitions.ValidEmail;
 
-/**
- *
- * @author Miha
- */
+
 public class EmailValidator implements ConstraintValidator<ValidEmail, String>{
   private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-+]+(.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(.[A-Za-z0-9]+)*(.[A-Za-z]{2,})$";
 
@@ -25,7 +22,7 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String>{
 
     @Override
     public boolean isValid(String t, ConstraintValidatorContext cvc) {
-    return isValidation(t);
+    return (isValidation(t));
     }
 
     private boolean isValidation(String s){

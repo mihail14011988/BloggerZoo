@@ -13,7 +13,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import miha.zika.entity.validation.EmailValidator;
 
-@Target({ElementType.TYPE,ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = EmailValidator.class)
 @Documented

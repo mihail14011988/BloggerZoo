@@ -66,4 +66,6 @@ public class AuthController {
     service.createUser(request);
     return ResponseEntity.ok(new MessageResponse("User registr is ok"));
     };
+    
+    
 }

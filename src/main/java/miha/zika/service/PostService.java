@@ -12,6 +12,7 @@ import miha.zika.repo.ImageRepo;
 import miha.zika.repo.PostRepo;
 import miha.zika.repo.UserRepo;
 import java.util.*;
+import miha.zika.entity.ImageComm;
 import miha.zika.mainException.PostNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,30 @@ public class PostService {
 
         return postRepo.findAllByOrderByCreatedDateDesc();
     }
+    public List<UserPost> getPostsForUser(Principal principal)
+    {UserBlogger blogger = getUserByPrincipal(principal);
+    return postRepo.findAllByuserbloggerOrderByCreatedDateDesc(blogger);
+    
+    }
+    public UserPost likePost(Long id, String username){
+    UserPost post = postRepo.findById(id).orElseThrow(()-> new PostNotFoundException("Post cannot not found"));
+    Optional<String> userLiked = post.getUserLiked().stream().filter(u->u.equals(username)).findAny();
+    if(userLiked.isPresent()){
+    post.setLikes(post.getLikes()-1);
+    post.getUserLiked().remove(username);
+    } else post.setLikes(post.getLikes()+1);
+    post.getUserLiked().add(username);
+    return postRepo.save(post);
+    }
+    
+    public void deletePost(Long id, Principal principal){
+    UserPost post = getPostById(id, principal);
+    Optional<ImageComm> imageComm = imageRepo.findByPostId(post.getId());
+    postRepo.delete(post);
+    imageComm.ifPresent(imageRepo::delete);
+    
+    }
+    
     
     public UserPost getPostById(Long id,Principal principal){
     UserBlogger blogger = getUserByPrincipal(principal);

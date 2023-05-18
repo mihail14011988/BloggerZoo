@@ -53,7 +53,8 @@ public class CommentService {
     List <Comment> comments = commentRepo.findAllByuserPost(post);
      return comments;
     }
-     public void deleteComment (Long commentId){
+    
+    public void deleteComment (Long commentId){
      Optional <Comment> comments = commentRepo.findById(commentId);
      comments.ifPresent(commentRepo::delete);
      }

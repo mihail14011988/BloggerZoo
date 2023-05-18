@@ -8,10 +8,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.logging.Level;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+import miha.zika.entity.ImageComm;
 import miha.zika.entity.UserBlogger;
+import miha.zika.entity.UserPost;
+import miha.zika.mainException.ImageNotFoundForPost;
 import miha.zika.repo.CommentRepo;
 import miha.zika.repo.ImageRepo;
 import miha.zika.repo.PostRepo;
@@ -21,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImageService {
@@ -37,6 +44,47 @@ public class ImageService {
         this.userRepo = userRepo;
     }
 
+    public ImageComm uploadImageToUser(MultipartFile file, Principal principal) throws IOException {
+        UserBlogger blogger = getUserByPrincipal(principal);
+        LOG.info("Uplouding file for user " + blogger.getName());
+        ImageComm image = imageRepo.findByUserId(blogger.getId()).orElse(null);
+        if (!ObjectUtils.isEmpty(image)) {
+            imageRepo.delete(image);
+        }
+        ImageComm imageN = new ImageComm();
+        imageN.setUserId(blogger.getId());
+        imageN.setImagesBytes(compressImage(file.getBytes()));
+        imageN.setImageName(file.getOriginalFilename());
+        return imageRepo.save(imageN);
+    }
+
+    public ImageComm uploadImageToPost(MultipartFile file, Principal principal, Long postId) throws IOException {
+        UserBlogger blogger = getUserByPrincipal(principal);
+        UserPost post = blogger.getUserPost().stream().filter(p -> p.getId().equals(postId)).collect(toSinglePostCollector());
+        ImageComm image = new ImageComm();
+        image.setPostId(post.getId());
+        image.setImagesBytes(compressImage(file.getBytes()));
+        image.setImageName(file.getOriginalFilename());
+        LOG.info("Uploading image to Post {}", post.getId());
+        return imageRepo.save(image);
+    }
+
+    public ImageComm getImageForUser(Principal principal) {
+        UserBlogger blogger = getUserByPrincipal(principal);
+        ImageComm image = imageRepo.findByUserId(blogger.getId()).orElse(null);
+        if (!ObjectUtils.isEmpty(image)) {
+            image.setImagesBytes(decompressImage(image.getImagesBytes()));
+        }
+        return image;
+    }
+
+    public ImageComm getImageToPost(Long postId){
+    ImageComm image = imageRepo.findByPostId(postId).orElseThrow(()-> new ImageNotFoundForPost("Image for Post not found")); 
+    if(!ObjectUtils.isEmpty(image)){
+    image.setImagesBytes(decompressImage(image.getImagesBytes()));
+    }
+    return image;
+    }
     //Компрессия фотографий
     private byte[] compressImage(byte[] data) {
         Deflater deflater = new Deflater();
@@ -77,5 +125,15 @@ public class ImageService {
     private UserBlogger getUserByPrincipal(Principal principal) {
         String username = principal.getName();
         return userRepo.findUserBloggerByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found " + username));
+    }
+
+    private <T> Collector<T, ?, T> toSinglePostCollector() {
+        return Collectors.collectingAndThen(Collectors.toList(),
+                list -> {
+                    if (list.size() != 1) {
+                        throw new IllegalStateException();
+                    }
+                    return list.get(0);
+                });
     }
 }
